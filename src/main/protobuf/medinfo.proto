@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package pl.edu.agh.llampart.medinfo;
+
+service Ledger {
+    rpc SaveExaminationReport (ExaminationReport) returns (Empty) {}
+    rpc RequestExamination (Request) returns (stream Response) {}
+}
+
+message Empty {
+
+}
+
+message Response {
+ oneof examination {
+    Examination simple = 1;
+    PersonExamination person = 2;
+ }
+  required DateTime when = 3;
+}
+
+message Request {
+    repeated string name = 1;
+    optional string examinerId = 2;
+    optional string patientId = 3;
+    optional DateTime afterThen = 4;
+    optional DateTime beforeThen = 5;
+}
+
+message DateTime {
+    required int64 instant = 1;
+    optional string timezone = 2;
+}
+
+message Examination {
+    required string name = 1;
+    oneof result {
+        string str = 2;
+        float flt = 3;
+    }
+    required string unit = 4;
+}
+
+message PersonExamination {
+    required Examination examination = 1;
+    required string patientId = 2;
+}
+
+message ExaminationReport {
+    required string examinerId = 1;
+    required DateTime date = 2;
+    required string patientId = 3;
+    repeated Examination examination = 4;
+}
